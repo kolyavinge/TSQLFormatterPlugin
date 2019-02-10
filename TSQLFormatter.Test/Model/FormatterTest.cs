@@ -58,5 +58,23 @@ JOIN NewProducts ON c1 = c2
             var actual = _formatter.GetFormattedText(text);
             Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod]
+        public void GetFormattedText_QueryWithUnscape()
+        {
+            var text = "select [group] from Products";
+            var expected = "SELECT [group] FROM Products";
+            var actual = _formatter.GetFormattedText(text);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void GetFormattedText_QueryWithUnscape2()
+        {
+            var text = "select [group]from Products";
+            var expected = "SELECT [group]FROM Products";
+            var actual = _formatter.GetFormattedText(text);
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

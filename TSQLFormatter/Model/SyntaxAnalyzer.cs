@@ -9,7 +9,7 @@ namespace TSQLFormatter.Model
     public class SyntaxAnalyzer
     {
         private HashSet<char> _delimiters = new HashSet<char>(
-            new[] { ' ', ',', '.', ';', '(', ')', '+', '-', '*', '/', '<', '>', '=', '[', ']' });
+            new[] { ' ', ',', '.', ';', '(', ')', '+', '-', '*', '/', '<', '>', '=' });
 
         private HashSet<string> _keywords;
         private HashSet<string> _functions;
@@ -69,6 +69,17 @@ namespace TSQLFormatter.Model
                         lexem.Kind = GetLexemKind(lexem.Name);
                         yield return lexem;
                         lexemNameArrayIndex = 0;
+                        goto case 1;
+                    }
+                    else if (ch == ']')
+                    {
+                        lexemNameArray[lexemNameArrayIndex++] = ch;
+                        lexem.EndPosition = pos;
+                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                        lexem.Kind = LexemKind.Other;
+                        yield return lexem;
+                        lexemNameArrayIndex = 0;
+                        pos++;
                         goto case 1;
                     }
                     else

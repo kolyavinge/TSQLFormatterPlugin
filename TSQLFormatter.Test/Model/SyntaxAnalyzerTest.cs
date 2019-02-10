@@ -97,11 +97,42 @@ namespace TSQLFormatter.Test.Model
         }
 
         [TestMethod]
+        public void Parse_Unescape()
+        {
+            var text = "select [group] from MyTable";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+            Assert.AreEqual(4, lexems.Count);
+            Assert.AreEqual(7, lexems[1].StartPosition);
+            Assert.AreEqual(13, lexems[1].EndPosition);
+            Assert.AreEqual("[group]", lexems[1].Name);
+            Assert.AreEqual(LexemKind.Other, lexems[1].Kind);
+        }
+
+        [TestMethod]
+        public void Parse_Unescape2()
+        {
+            var text = "select [group]from MyTable";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+
+            Assert.AreEqual(4, lexems.Count);
+
+            Assert.AreEqual(7, lexems[1].StartPosition);
+            Assert.AreEqual(13, lexems[1].EndPosition);
+            Assert.AreEqual("[group]", lexems[1].Name);
+            Assert.AreEqual(LexemKind.Other, lexems[1].Kind);
+
+            Assert.AreEqual(14, lexems[2].StartPosition);
+            Assert.AreEqual(17, lexems[2].EndPosition);
+            Assert.AreEqual("from", lexems[2].Name);
+            Assert.AreEqual(LexemKind.Keyword, lexems[2].Kind);
+        }
+
+        [TestMethod]
         public void Parse_SQLFile()
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\1.sql");
             var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
-            Assert.AreEqual(1020, lexems.Count);
+            Assert.AreEqual(757, lexems.Count);
         }
     }
 }
