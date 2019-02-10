@@ -1,0 +1,9 @@
+/packages
+/TestResults
+/StarterConsoleApp/bin
+/StarterConsoleApp/obj
+/TSQLFormatter/bin
+/TSQLFormatter/obj
+/TSQLFormatter.Test/bin
+/TSQLFormatter.Test/obj
+/.vs
