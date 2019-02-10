@@ -33,10 +33,18 @@ namespace TSQLFormatter.Model
                 case 1:
                     if (pos >= text.Length) break;
                     ch = text[pos];
-                    if (IsSpaceOrReturn(ch))
+                    if (IsSpace(ch) || IsReturn(ch))
                     {
                         pos++;
                         goto case 1;
+                    }
+                    else if (ch == '-' && pos + 1 < text.Length && text[pos + 1] == '-')
+                    {
+                        lexemNameArray[lexemNameArrayIndex++] = '-';
+                        lexemNameArray[lexemNameArrayIndex++] = '-';
+                        lexem = new Lexem { StartPosition = pos, Kind = LexemKind.Comments };
+                        pos += 2;
+                        goto case 3;
                     }
                     else if (IsDelimiter(ch))
                     {
@@ -62,7 +70,7 @@ namespace TSQLFormatter.Model
                         break;
                     }
                     ch = text[pos];
-                    if (IsSpaceOrReturn(ch) || IsDelimiter(ch))
+                    if (IsSpace(ch) || IsReturn(ch) || IsDelimiter(ch))
                     {
                         lexem.EndPosition = pos - 1;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
@@ -88,6 +96,29 @@ namespace TSQLFormatter.Model
                         pos++;
                         goto case 2;
                     }
+                case 3:
+                    if (pos >= text.Length)
+                    {
+                        lexem.EndPosition = pos - 1;
+                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                        yield return lexem;
+                        break;
+                    }
+                    ch = text[pos];
+                    if (IsReturn(ch))
+                    {
+                        lexem.EndPosition = pos - 1;
+                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                        yield return lexem;
+                        pos++;
+                        goto case 1;
+                    }
+                    else
+                    {
+                        lexemNameArray[lexemNameArrayIndex++] = ch;
+                        pos++;
+                        goto case 3;
+                    }
             }
         }
 
@@ -111,9 +142,14 @@ namespace TSQLFormatter.Model
             return _delimiters.Contains(ch);
         }
 
-        private bool IsSpaceOrReturn(char ch)
+        private bool IsSpace(char ch)
         {
-            return ch == ' ' || ch == '\r' || ch == '\n';
+            return ch == ' ' || ch == '\t';
+        }
+
+        private bool IsReturn(char ch)
+        {
+            return ch == '\r' || ch == '\n';
         }
     }
 }

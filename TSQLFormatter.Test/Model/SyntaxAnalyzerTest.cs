@@ -128,11 +128,23 @@ namespace TSQLFormatter.Test.Model
         }
 
         [TestMethod]
+        public void Parse_Comments()
+        {
+            var text = "select * from MyTable -- comments";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+            Assert.AreEqual(5, lexems.Count);
+            Assert.AreEqual(22, lexems[4].StartPosition);
+            Assert.AreEqual(32, lexems[4].EndPosition);
+            Assert.AreEqual("-- comments", lexems[4].Name);
+            Assert.AreEqual(LexemKind.Comments, lexems[4].Kind);
+        }
+
+        [TestMethod]
         public void Parse_SQLFile()
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\1.sql");
             var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
-            Assert.AreEqual(757, lexems.Count);
+            Assert.AreEqual(653, lexems.Count);
         }
     }
 }
