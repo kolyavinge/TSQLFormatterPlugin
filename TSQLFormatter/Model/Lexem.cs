@@ -28,6 +28,7 @@ namespace TSQLFormatter.Model
         Function,
         Delimiter,
         Other,
-        Comments
+        Comment,
+        String
     }
 }

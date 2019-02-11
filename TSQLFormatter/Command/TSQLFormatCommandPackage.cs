@@ -37,12 +37,19 @@ namespace TSQLFormatter.Command
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(TSQLFormatCommandPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+    [ProvideUIContextRule(_uiContextSupportedFiles,
+        "RightFileTypeOpen",
+        "(CSharpFileOpen)",
+        new[] { "CSharpFileOpen" },
+        new[] { "ActiveEditorContentType:tsql" })]
     public sealed class TSQLFormatCommandPackage : AsyncPackage
     {
         /// <summary>
         /// TSQLFormatCommandPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "af4449ee-73ac-4451-830e-1e9e5eec50ee";
+
+        private const string _uiContextSupportedFiles = "24551deb-f034-43e9-a279-0e541241687e";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TSQLFormatCommandPackage"/> class.

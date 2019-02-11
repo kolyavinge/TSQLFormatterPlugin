@@ -7,9 +7,9 @@ namespace StarterConsoleApp
     {
         static void Main(string[] args)
         {
-            var fileText = File.ReadAllText("..\\..\\..\\TSQLFormatter.Test\\SQLFiles\\1.sql");
+            var fileText = File.ReadAllText("..\\..\\..\\TSQLFormatter.Test\\SQLFiles\\3.sql");
             var formatter = new Formatter();
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var result = formatter.GetFormattedText(fileText);
             }

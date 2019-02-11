@@ -136,15 +136,43 @@ namespace TSQLFormatter.Test.Model
             Assert.AreEqual(22, lexems[4].StartPosition);
             Assert.AreEqual(32, lexems[4].EndPosition);
             Assert.AreEqual("-- comments", lexems[4].Name);
-            Assert.AreEqual(LexemKind.Comments, lexems[4].Kind);
+            Assert.AreEqual(LexemKind.Comment, lexems[4].Kind);
         }
 
         [TestMethod]
-        public void Parse_SQLFile()
+        public void Parse_Strings()
+        {
+            var text = "'select * from MyTable'";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+            Assert.AreEqual(1, lexems.Count);
+            Assert.AreEqual(0, lexems[0].StartPosition);
+            Assert.AreEqual(22, lexems[0].EndPosition);
+            Assert.AreEqual("'select * from MyTable'", lexems[0].Name);
+            Assert.AreEqual(LexemKind.String, lexems[0].Kind);
+        }
+
+        [TestMethod]
+        public void Parse_SQLFile_1()
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\1.sql");
             var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
-            Assert.AreEqual(653, lexems.Count);
+            Assert.AreEqual(632, lexems.Count);
+        }
+
+        [TestMethod]
+        public void Parse_SQLFile_2()
+        {
+            var fileText = File.ReadAllText("..\\..\\SQLFiles\\2.sql");
+            var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
+            Assert.AreEqual(1739, lexems.Count);
+        }
+
+        [TestMethod]
+        public void Parse_SQLFile_3()
+        {
+            var fileText = File.ReadAllText("..\\..\\SQLFiles\\3.sql");
+            var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
+            Assert.AreEqual(110015, lexems.Count);
         }
     }
 }

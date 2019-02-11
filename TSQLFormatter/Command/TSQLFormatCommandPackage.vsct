@@ -56,10 +56,12 @@
       <Button guid="guidTSQLFormatCommandPackageCmdSet" id="TSQLFormatCommandId" priority="0x0100" type="Button">
         <Parent guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>TSQL Format</ButtonText>
         </Strings>
       </Button>
+
     </Buttons>
 
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -73,6 +75,10 @@
     </Bitmaps>
   </Commands>
 
+  <VisibilityConstraints>
+    <VisibilityItem guid="guidTSQLFormatCommandPackageCmdSet" id="TSQLFormatCommandId" context="uiContextSupportedFiles" />
+  </VisibilityConstraints>
+
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidTSQLFormatCommandPackage" value="{af4449ee-73ac-4451-830e-1e9e5eec50ee}" />
@@ -82,6 +88,8 @@
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="TSQLFormatCommandId" value="0x0100" />
     </GuidSymbol>
+
+    <GuidSymbol name="uiContextSupportedFiles" value="{24551deb-f034-43e9-a279-0e541241687e}" />
 
     <GuidSymbol name="guidImages" value="{55b82e4c-3f59-4442-a8b2-6d1e6746e4e5}" >
       <IDSymbol name="bmpPic1" value="1" />

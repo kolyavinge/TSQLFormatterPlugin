@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TSQLFormatter.Model
 {
@@ -23,7 +21,7 @@ namespace TSQLFormatter.Model
         public IEnumerable<Lexem> Parse(string text)
         {
             if (String.IsNullOrWhiteSpace(text)) yield break;
-            var lexemNameArray = new char[256];
+            var lexemNameArray = new char[4096];
             int lexemNameArrayIndex = 0;
             int pos = 0;
             char ch;
@@ -38,13 +36,20 @@ namespace TSQLFormatter.Model
                         pos++;
                         goto case 1;
                     }
-                    else if (ch == '-' && pos + 1 < text.Length && text[pos + 1] == '-')
+                    else if (ch == '-' && pos + 1 < text.Length && text[pos + 1] == '-') // comment start
                     {
                         lexemNameArray[lexemNameArrayIndex++] = '-';
                         lexemNameArray[lexemNameArrayIndex++] = '-';
-                        lexem = new Lexem { StartPosition = pos, Kind = LexemKind.Comments };
+                        lexem = new Lexem { StartPosition = pos, Kind = LexemKind.Comment };
                         pos += 2;
                         goto case 3;
+                    }
+                    else if (ch == '\'') // string start
+                    {
+                        lexem = new Lexem { StartPosition = pos, Kind = LexemKind.String };
+                        lexemNameArray[lexemNameArrayIndex++] = ch;
+                        pos++;
+                        goto case 4;
                     }
                     else if (IsDelimiter(ch))
                     {
@@ -60,7 +65,7 @@ namespace TSQLFormatter.Model
                         pos++;
                         goto case 2;
                     }
-                case 2:
+                case 2: // keyword, function or other name
                     if (pos >= text.Length)
                     {
                         lexem.EndPosition = pos - 1;
@@ -96,7 +101,7 @@ namespace TSQLFormatter.Model
                         pos++;
                         goto case 2;
                     }
-                case 3:
+                case 3: // comment
                     if (pos >= text.Length)
                     {
                         lexem.EndPosition = pos - 1;
@@ -110,6 +115,7 @@ namespace TSQLFormatter.Model
                         lexem.EndPosition = pos - 1;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
                         yield return lexem;
+                        lexemNameArrayIndex = 0;
                         pos++;
                         goto case 1;
                     }
@@ -118,6 +124,40 @@ namespace TSQLFormatter.Model
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         pos++;
                         goto case 3;
+                    }
+                case 4: // string
+                    if (pos >= text.Length)
+                    {
+                        lexem.EndPosition = pos - 1;
+                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                        yield return lexem;
+                        break;
+                    }
+                    ch = text[pos];
+                    if (IsReturn(ch))
+                    {
+                        lexem.EndPosition = pos - 1;
+                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                        yield return lexem;
+                        lexemNameArrayIndex = 0;
+                        pos++;
+                        goto case 1;
+                    }
+                    else if (ch == '\'')
+                    {
+                        lexemNameArray[lexemNameArrayIndex++] = ch;
+                        lexem.EndPosition = pos;
+                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                        yield return lexem;
+                        lexemNameArrayIndex = 0;
+                        pos++;
+                        goto case 1;
+                    }
+                    else
+                    {
+                        lexemNameArray[lexemNameArrayIndex++] = ch;
+                        pos++;
+                        goto case 4;
                     }
             }
         }
