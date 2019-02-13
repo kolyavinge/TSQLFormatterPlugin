@@ -1,5 +1,4 @@
 ﻿using EnvDTE;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using System;
 using System.ComponentModel.Design;
@@ -25,7 +24,7 @@ namespace TSQLFormatter.Command
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        private readonly AsyncPackage package;
+        private readonly AsyncPackage _package;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TSQLFormatCommand"/> class.
@@ -35,17 +34,11 @@ namespace TSQLFormatter.Command
         /// <param name="commandService">Command service to add command to, not null.</param>
         private TSQLFormatCommand(AsyncPackage package, OleMenuCommandService commandService)
         {
-            this.package = package ?? throw new ArgumentNullException(nameof(package));
+            this._package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
             var menuCommandID = new CommandID(CommandSet, CommandId);
-            var menuItem = new OleMenuCommand(Execute, menuCommandID);
-            menuItem.BeforeQueryStatus += MenuItem_BeforeQueryStatus;
+            var menuItem = new MenuCommand(Execute, menuCommandID);
             commandService.AddCommand(menuItem);
-        }
-
-        private void MenuItem_BeforeQueryStatus(object sender, EventArgs e)
-        {
-            var command = sender as MenuCommand;
         }
 
         /// <summary>
@@ -58,7 +51,7 @@ namespace TSQLFormatter.Command
         /// </summary>
         private IAsyncServiceProvider ServiceProvider
         {
-            get { return this.package; }
+            get { return _package; }
         }
 
         /// <summary>
