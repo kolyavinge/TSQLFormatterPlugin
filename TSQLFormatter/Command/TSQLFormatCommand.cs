@@ -81,11 +81,20 @@ namespace TSQLFormatter.Command
             if (dte.ActiveDocument == null) return;
             var activeDocument = (TextDocument)dte.ActiveDocument.Object();
             if (activeDocument == null) return;
-            var activeDocumentText = activeDocument.CreateEditPoint(activeDocument.StartPoint).GetText(activeDocument.EndPoint);
             var formatter = new TSQLFormatter.Model.Formatter();
-            var activeDocumentFormattedText = formatter.GetFormattedText(activeDocumentText);
-            activeDocument.CreateEditPoint(activeDocument.StartPoint).Delete(activeDocument.EndPoint);
-            activeDocument.CreateEditPoint(activeDocument.StartPoint).Insert(activeDocumentFormattedText);
+            if (String.IsNullOrWhiteSpace(activeDocument.Selection.Text))
+            {
+                var activeDocumentText = activeDocument.CreateEditPoint(activeDocument.StartPoint).GetText(activeDocument.EndPoint);
+                var activeDocumentFormattedText = formatter.GetFormattedText(activeDocumentText);
+                activeDocument.CreateEditPoint(activeDocument.StartPoint).Delete(activeDocument.EndPoint);
+                activeDocument.CreateEditPoint(activeDocument.StartPoint).Insert(activeDocumentFormattedText);
+            }
+            else
+            {
+                var formattedText = formatter.GetFormattedText(activeDocument.Selection.Text);
+                activeDocument.Selection.Delete();
+                activeDocument.Selection.Insert(formattedText);
+            }
         }
     }
 }

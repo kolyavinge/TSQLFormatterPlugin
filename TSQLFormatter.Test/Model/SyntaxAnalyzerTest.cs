@@ -45,7 +45,17 @@ namespace TSQLFormatter.Test.Model
             Assert.AreEqual(14, lexems[i].StartPosition);
             Assert.AreEqual(20, lexems[i].EndPosition);
             Assert.AreEqual("MyTable", lexems[i].Name);
-            Assert.AreEqual(LexemKind.Other, lexems[i].Kind);
+            Assert.AreEqual(LexemKind.Identifier, lexems[i].Kind);
+        }
+
+        [TestMethod]
+        public void Parse_QueryTempTable()
+        {
+            var text = "select * from #TempTable";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+            Assert.AreEqual(4, lexems.Count);
+            Assert.AreEqual("#TempTable", lexems[3].Name);
+            Assert.AreEqual(LexemKind.Identifier, lexems[3].Kind);
         }
 
         [TestMethod]
@@ -73,7 +83,7 @@ namespace TSQLFormatter.Test.Model
             Assert.AreEqual(14, lexems[i].StartPosition);
             Assert.AreEqual(20, lexems[i].EndPosition);
             Assert.AreEqual("MyTable", lexems[i].Name);
-            Assert.AreEqual(LexemKind.Other, lexems[i].Kind);
+            Assert.AreEqual(LexemKind.Identifier, lexems[i].Kind);
             i++;
             Assert.AreEqual(22, lexems[i].StartPosition);
             Assert.AreEqual(26, lexems[i].EndPosition);
@@ -83,7 +93,7 @@ namespace TSQLFormatter.Test.Model
             Assert.AreEqual(28, lexems[i].StartPosition);
             Assert.AreEqual(28, lexems[i].EndPosition);
             Assert.AreEqual("a", lexems[i].Name);
-            Assert.AreEqual(LexemKind.Other, lexems[i].Kind);
+            Assert.AreEqual(LexemKind.Identifier, lexems[i].Kind);
             i++;
             Assert.AreEqual(30, lexems[i].StartPosition);
             Assert.AreEqual(30, lexems[i].EndPosition);
@@ -105,7 +115,7 @@ namespace TSQLFormatter.Test.Model
             Assert.AreEqual(7, lexems[1].StartPosition);
             Assert.AreEqual(13, lexems[1].EndPosition);
             Assert.AreEqual("[group]", lexems[1].Name);
-            Assert.AreEqual(LexemKind.Other, lexems[1].Kind);
+            Assert.AreEqual(LexemKind.Identifier, lexems[1].Kind);
         }
 
         [TestMethod]
@@ -119,7 +129,7 @@ namespace TSQLFormatter.Test.Model
             Assert.AreEqual(7, lexems[1].StartPosition);
             Assert.AreEqual(13, lexems[1].EndPosition);
             Assert.AreEqual("[group]", lexems[1].Name);
-            Assert.AreEqual(LexemKind.Other, lexems[1].Kind);
+            Assert.AreEqual(LexemKind.Identifier, lexems[1].Kind);
 
             Assert.AreEqual(14, lexems[2].StartPosition);
             Assert.AreEqual(17, lexems[2].EndPosition);
@@ -142,13 +152,39 @@ namespace TSQLFormatter.Test.Model
         [TestMethod]
         public void Parse_Strings()
         {
-            var text = "'select * from MyTable'";
+            var text = "'select [group] from MyTable'";
             var lexems = _syntaxAnalyzer.Parse(text).ToList();
             Assert.AreEqual(1, lexems.Count);
             Assert.AreEqual(0, lexems[0].StartPosition);
-            Assert.AreEqual(22, lexems[0].EndPosition);
-            Assert.AreEqual("'select * from MyTable'", lexems[0].Name);
+            Assert.AreEqual(28, lexems[0].EndPosition);
+            Assert.AreEqual("'select [group] from MyTable'", lexems[0].Name);
             Assert.AreEqual(LexemKind.String, lexems[0].Kind);
+        }
+
+        [TestMethod]
+        public void Parse_Variables()
+        {
+            var text = "declare @var int";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+            Assert.AreEqual(3, lexems.Count);
+            Assert.AreEqual("declare", lexems[0].Name);
+            Assert.AreEqual(LexemKind.Keyword, lexems[0].Kind);
+            Assert.AreEqual("@var", lexems[1].Name);
+            Assert.AreEqual(LexemKind.Variable, lexems[1].Kind);
+            Assert.AreEqual("int", lexems[2].Name);
+            Assert.AreEqual(LexemKind.Keyword, lexems[2].Kind);
+        }
+
+        [TestMethod]
+        public void Parse_N()
+        {
+            var text = "N'string'";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+            Assert.AreEqual(2, lexems.Count);
+            Assert.AreEqual("N", lexems[0].Name);
+            Assert.AreEqual(LexemKind.Other, lexems[0].Kind);
+            Assert.AreEqual("'string'", lexems[1].Name);
+            Assert.AreEqual(LexemKind.String, lexems[1].Kind);
         }
 
         [TestMethod]
@@ -156,7 +192,9 @@ namespace TSQLFormatter.Test.Model
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\1.sql");
             var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
-            Assert.AreEqual(632, lexems.Count);
+            Assert.AreEqual(637, lexems.Count);
+            lexems.ForEach(x => Assert.IsTrue(x.StartPosition <= fileText.Length));
+            lexems.ForEach(x => Assert.IsTrue(x.EndPosition <= fileText.Length));
         }
 
         [TestMethod]
@@ -164,7 +202,9 @@ namespace TSQLFormatter.Test.Model
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\2.sql");
             var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
-            Assert.AreEqual(1739, lexems.Count);
+            Assert.AreEqual(1744, lexems.Count);
+            lexems.ForEach(x => Assert.IsTrue(x.StartPosition <= fileText.Length));
+            lexems.ForEach(x => Assert.IsTrue(x.EndPosition <= fileText.Length));
         }
 
         [TestMethod]
@@ -172,7 +212,9 @@ namespace TSQLFormatter.Test.Model
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\3.sql");
             var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
-            Assert.AreEqual(110015, lexems.Count);
+            Assert.AreEqual(110824, lexems.Count);
+            lexems.ForEach(x => Assert.IsTrue(x.StartPosition <= fileText.Length));
+            lexems.ForEach(x => Assert.IsTrue(x.EndPosition <= fileText.Length));
         }
     }
 }

@@ -20,7 +20,8 @@ namespace TSQLFormatter.Model
 
         public IEnumerable<Lexem> Parse(string text)
         {
-            if (String.IsNullOrWhiteSpace(text)) yield break;
+            var result = new List<Lexem>();
+            if (String.IsNullOrWhiteSpace(text)) return result;
             var lexemNameArray = new char[4096];
             int lexemNameArrayIndex = 0;
             int pos = 0;
@@ -46,6 +47,10 @@ namespace TSQLFormatter.Model
                     }
                     else if (ch == '\'') // string start
                     {
+                        if (result.Any() && result.Last().Name == "N")
+                        {
+                            result.Last().Kind = LexemKind.Other;
+                        }
                         lexem = new Lexem { StartPosition = pos, Kind = LexemKind.String };
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         pos++;
@@ -54,7 +59,7 @@ namespace TSQLFormatter.Model
                     else if (IsDelimiter(ch))
                     {
                         lexem = new Lexem { StartPosition = pos, EndPosition = pos, Kind = LexemKind.Delimiter, Name = ch.ToString() };
-                        yield return lexem;
+                        result.Add(lexem);
                         pos++;
                         goto case 1;
                     }
@@ -71,7 +76,7 @@ namespace TSQLFormatter.Model
                         lexem.EndPosition = pos - 1;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
                         lexem.Kind = GetLexemKind(lexem.Name);
-                        yield return lexem;
+                        result.Add(lexem);
                         break;
                     }
                     ch = text[pos];
@@ -80,7 +85,7 @@ namespace TSQLFormatter.Model
                         lexem.EndPosition = pos - 1;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
                         lexem.Kind = GetLexemKind(lexem.Name);
-                        yield return lexem;
+                        result.Add(lexem);
                         lexemNameArrayIndex = 0;
                         goto case 1;
                     }
@@ -89,10 +94,19 @@ namespace TSQLFormatter.Model
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         lexem.EndPosition = pos;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        lexem.Kind = LexemKind.Other;
-                        yield return lexem;
+                        lexem.Kind = LexemKind.Identifier;
+                        result.Add(lexem);
                         lexemNameArrayIndex = 0;
                         pos++;
+                        goto case 1;
+                    }
+                    else if (ch == '\'' && lexemNameArray[lexemNameArrayIndex - 1] == 'N')
+                    {
+                        lexem.EndPosition = pos;
+                        lexem.Name = "N";
+                        lexem.Kind = LexemKind.Other;
+                        result.Add(lexem);
+                        lexemNameArrayIndex = 0;
                         goto case 1;
                     }
                     else
@@ -106,7 +120,7 @@ namespace TSQLFormatter.Model
                     {
                         lexem.EndPosition = pos - 1;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        yield return lexem;
+                        result.Add(lexem);
                         break;
                     }
                     ch = text[pos];
@@ -114,7 +128,7 @@ namespace TSQLFormatter.Model
                     {
                         lexem.EndPosition = pos - 1;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        yield return lexem;
+                        result.Add(lexem);
                         lexemNameArrayIndex = 0;
                         pos++;
                         goto case 1;
@@ -130,7 +144,7 @@ namespace TSQLFormatter.Model
                     {
                         lexem.EndPosition = pos - 1;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        yield return lexem;
+                        result.Add(lexem);
                         break;
                     }
                     ch = text[pos];
@@ -138,7 +152,7 @@ namespace TSQLFormatter.Model
                     {
                         lexem.EndPosition = pos - 1;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        yield return lexem;
+                        result.Add(lexem);
                         lexemNameArrayIndex = 0;
                         pos++;
                         goto case 1;
@@ -148,7 +162,7 @@ namespace TSQLFormatter.Model
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         lexem.EndPosition = pos;
                         lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        yield return lexem;
+                        result.Add(lexem);
                         lexemNameArrayIndex = 0;
                         pos++;
                         goto case 1;
@@ -160,11 +174,18 @@ namespace TSQLFormatter.Model
                         goto case 4;
                     }
             }
+
+            return result;
         }
 
         private LexemKind GetLexemKind(string lexemName)
         {
-            return IsKeyword(lexemName) ? LexemKind.Keyword : (IsFunction(lexemName) ? LexemKind.Function : LexemKind.Other);
+            if (IsKeyword(lexemName)) return LexemKind.Keyword;
+            if (IsFunction(lexemName)) return LexemKind.Function;
+            if (IsVariable(lexemName)) return LexemKind.Variable;
+            if (IsIdentifier(lexemName)) return LexemKind.Identifier;
+
+            return LexemKind.Other;
         }
 
         private bool IsKeyword(string lexemName)
@@ -175,6 +196,16 @@ namespace TSQLFormatter.Model
         private bool IsFunction(string lexemName)
         {
             return _functions.Contains(lexemName, StringComparer.InvariantCultureIgnoreCase);
+        }
+
+        private bool IsVariable(string lexemName)
+        {
+            return lexemName.StartsWith("@");
+        }
+
+        private bool IsIdentifier(string lexemName)
+        {
+            return Char.IsLetter(lexemName[0]) || lexemName[0] == '_' || lexemName[0] == '#';
         }
 
         private bool IsDelimiter(char ch)

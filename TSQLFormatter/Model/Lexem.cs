@@ -1,14 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TSQLFormatter.Model
 {
     public class Lexem
     {
         public string Name { get; set; }
+
+        public bool IsUnescaped
+        {
+            get { return Name[0] == '[' && Name[Name.Length - 1] == ']'; }
+        }
 
         public LexemKind Kind { get; set; }
 
@@ -26,9 +27,11 @@ namespace TSQLFormatter.Model
     {
         Keyword,
         Function,
+        Identifier,
+        Variable,
+        String,
+        Comment,
         Delimiter,
         Other,
-        Comment,
-        String
     }
 }
