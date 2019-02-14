@@ -136,6 +136,15 @@ FROM
         }
 
         [TestMethod]
+        public void GetFormattedText_TabToSpaces()
+        {
+            var text = "select * \tfrom Products";
+            var expected = "SELECT *     FROM [Products]";
+            var actual = _formatter.GetFormattedText(text);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void GetFormattedText_QueryWithString()
         {
             var text = "select * from Products where Code in ('1', '2', '3')";

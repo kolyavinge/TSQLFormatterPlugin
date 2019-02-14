@@ -59,6 +59,7 @@ namespace TSQLFormatter.Model
             "RADIANS",
             "RAND",
             "ROUND",
+            "ROW_NUMBER",
             "SIGN",
             "SIN",
             "SQRT",
@@ -99,7 +100,9 @@ namespace TSQLFormatter.Model
             "GROUPING",
             "GROUPING_ID",
             "VAR",
-            "VARP"
+            "VARP",
+            "OBJECT_ID",
+            "OBJECT_SCHEMA_NAME"
         };
 
         public IEnumerator<string> GetEnumerator()

@@ -138,6 +138,16 @@ namespace TSQLFormatter.Test.Model
         }
 
         [TestMethod]
+        public void Parse_UnescapeWithDelimiter()
+        {
+            var text = "select [group-1] from MyTable";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+            Assert.AreEqual(4, lexems.Count);
+            Assert.AreEqual("[group-1]", lexems[1].Name);
+            Assert.AreEqual(LexemKind.Identifier, lexems[1].Kind);
+        }
+
+        [TestMethod]
         public void Parse_Comments()
         {
             var text = "select * from MyTable -- comments";

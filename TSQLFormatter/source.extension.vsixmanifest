@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="TSQLFormatter.b3b0b501-e74b-4d27-8849-3b6b88c1ff73" Version="1.0" Language="en-US" Publisher="Microsoft" />
+        <Identity Id="TSQLFormatter.b3b0b501-e74b-4d27-8849-3b6b88c1ff73" Version="1.0" Language="en-US" Publisher="Kolay Vinge" />
         <DisplayName>TSQLFormatter</DisplayName>
-        <Description xml:space="preserve">TSQLFormatterTSQLFormatter</Description>
+        <Description xml:space="preserve">T-SQL Formatter Plugin for Visual Studio</Description>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0, 16.0)" />

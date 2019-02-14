@@ -17,8 +17,9 @@ namespace TSQLFormatter.Model
             var upperCaseKeywordsText = ToUpperCaseKeywords(unformattedText, keywordLexems);
             var unescaped = Unescape(upperCaseKeywordsText, identifiersLexems);
             var trimmedText = RemoveTailSpaces(unescaped);
+            var tabToSpaces = trimmedText.Replace("\t", "    ");
 
-            return trimmedText;
+            return tabToSpaces;
         }
 
         private string ToUpperCaseKeywords(string inputText, IEnumerable<Lexem> keywordLexems)

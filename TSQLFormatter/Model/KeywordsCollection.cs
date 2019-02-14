@@ -47,6 +47,7 @@ namespace TSQLFormatter.Model
             "CURRENT_TIMESTAMP",
             "CURRENT_USER",
             "CURSOR",
+            "DATE",
             "DATABASE",
             "DBCC",
             "DEALLOCATE",
@@ -127,6 +128,7 @@ namespace TSQLFormatter.Model
             "ORDER",
             "OUTER",
             "OVER",
+            "PARTITION",
             "PERCENT",
             "PIVOT",
             "PLAN",
@@ -223,6 +225,17 @@ namespace TSQLFormatter.Model
             "SQL_VARIANT",
             "TIMESTAMP",
             "UNIQUEIDENTIFIER",
+            "INCLUDE",
+            "STATISTICS_NORECOMPUTE",
+            "SORT_IN_TEMPDB",
+            "DROP_EXISTING",
+            "ONLINE",
+            "ALLOW_ROW_LOCKS",
+            "ALLOW_PAGE_LOCKS",
+            "FILLFACTOR",
+            "PRIMARY",
+            "STATISTICS",
+            "SYSNAME"
         };
 
         public IEnumerator<string> GetEnumerator()
