@@ -10,6 +10,7 @@ namespace TSQLFormatter.Model
     {
         General,
         KeywordFunctionOther,
+        Identifier,
         Comment,
         String,
         EndUnknownLexem,

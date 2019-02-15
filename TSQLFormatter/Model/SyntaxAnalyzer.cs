@@ -56,6 +56,13 @@ namespace TSQLFormatter.Model
                         pos++;
                         goto case State.String;
                     }
+                    else if (ch == '[')
+                    {
+                        lexemNameArray[lexemNameArrayIndex++] = '[';
+                        lexem = new Lexem { StartPosition = pos, Kind = LexemKind.Identifier };
+                        pos++;
+                        goto case State.Identifier;
+                    }
                     else if (IsDelimiter(ch))
                     {
                         lexem = new Lexem { StartPosition = pos, EndPosition = pos, Kind = LexemKind.Delimiter, Name = ch.ToString() };
@@ -80,17 +87,6 @@ namespace TSQLFormatter.Model
                         lexem.Kind = GetLexemKind(lexem.Name);
                         result.Add(lexem);
                         lexemNameArrayIndex = 0;
-                        goto case State.General;
-                    }
-                    else if (ch == ']')
-                    {
-                        lexemNameArray[lexemNameArrayIndex++] = ch;
-                        lexem.EndPosition = pos;
-                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        lexem.Kind = LexemKind.Identifier;
-                        result.Add(lexem);
-                        lexemNameArrayIndex = 0;
-                        pos++;
                         goto case State.General;
                     }
                     else if (ch == '\'' && lexemNameArray[lexemNameArrayIndex - 1] == 'N')
@@ -153,6 +149,34 @@ namespace TSQLFormatter.Model
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         pos++;
                         goto case State.String;
+                    }
+                case State.Identifier:
+                    if (pos >= text.Length) goto case State.End;
+                    ch = text[pos];
+                    if (IsReturn(ch))
+                    {
+                        lexem.EndPosition = pos - 1;
+                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                        result.Add(lexem);
+                        lexemNameArrayIndex = 0;
+                        pos++;
+                        goto case State.General;
+                    }
+                    else if (ch == ']')
+                    {
+                        lexemNameArray[lexemNameArrayIndex++] = ch;
+                        lexem.EndPosition = pos;
+                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                        result.Add(lexem);
+                        lexemNameArrayIndex = 0;
+                        pos++;
+                        goto case State.General;
+                    }
+                    else
+                    {
+                        lexemNameArray[lexemNameArrayIndex++] = ch;
+                        pos++;
+                        goto case State.Identifier;
                     }
                 case State.EndUnknownLexem:
                     lexem.EndPosition = pos - 1;

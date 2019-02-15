@@ -222,7 +222,7 @@ namespace TSQLFormatter.Test.Model
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\3.sql");
             var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
-            Assert.AreEqual(110824, lexems.Count);
+            Assert.AreEqual(110747, lexems.Count);
             lexems.ForEach(x => Assert.IsTrue(x.StartPosition <= fileText.Length));
             lexems.ForEach(x => Assert.IsTrue(x.EndPosition <= fileText.Length));
         }

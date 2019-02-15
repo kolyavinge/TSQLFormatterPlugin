@@ -168,6 +168,7 @@ namespace TSQLFormatter.Model
             "SOME",
             "STATISTICS",
             "SYSTEM_USER",
+            "SYSNAME",
             "TABLE",
             "TABLESAMPLE",
             "TEXTSIZE",
@@ -235,7 +236,9 @@ namespace TSQLFormatter.Model
             "FILLFACTOR",
             "PRIMARY",
             "STATISTICS",
-            "SYSNAME"
+            "PAD_INDEX",
+            "IGNORE_DUP_KEY",
+            "PRIMARY"
         };
 
         public IEnumerator<string> GetEnumerator()
