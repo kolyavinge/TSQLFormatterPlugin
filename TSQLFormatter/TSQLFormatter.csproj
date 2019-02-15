@@ -59,6 +59,7 @@
     <Compile Include="Model\FunctionsCollection.cs" />
     <Compile Include="Model\Formatter.cs" />
     <Compile Include="Model\KeywordsCollection.cs" />
+    <Compile Include="Model\State.cs" />
     <Compile Include="Model\SyntaxAnalyzer.cs" />
     <Compile Include="Model\Lexem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

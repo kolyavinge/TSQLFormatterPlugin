@@ -27,15 +27,15 @@ namespace TSQLFormatter.Model
             int pos = 0;
             char ch;
             Lexem lexem = null;
-            switch (1)
+            switch (State.General)
             {
-                case 1:
+                case State.General:
                     if (pos >= text.Length) break;
                     ch = text[pos];
                     if (IsSpace(ch) || IsReturn(ch))
                     {
                         pos++;
-                        goto case 1;
+                        goto case State.General;
                     }
                     else if (ch == '-' && pos + 1 < text.Length && text[pos + 1] == '-') // comment start
                     {
@@ -43,7 +43,7 @@ namespace TSQLFormatter.Model
                         lexemNameArray[lexemNameArrayIndex++] = '-';
                         lexem = new Lexem { StartPosition = pos, Kind = LexemKind.Comment };
                         pos += 2;
-                        goto case 3;
+                        goto case State.Comment;
                     }
                     else if (ch == '\'') // string start
                     {
@@ -54,31 +54,24 @@ namespace TSQLFormatter.Model
                         lexem = new Lexem { StartPosition = pos, Kind = LexemKind.String };
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         pos++;
-                        goto case 4;
+                        goto case State.String;
                     }
                     else if (IsDelimiter(ch))
                     {
                         lexem = new Lexem { StartPosition = pos, EndPosition = pos, Kind = LexemKind.Delimiter, Name = ch.ToString() };
                         result.Add(lexem);
                         pos++;
-                        goto case 1;
+                        goto case State.General;
                     }
                     else
                     {
                         lexem = new Lexem { StartPosition = pos };
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         pos++;
-                        goto case 2;
+                        goto case State.KeywordFunctionOther;
                     }
-                case 2: // keyword, function or other name
-                    if (pos >= text.Length)
-                    {
-                        lexem.EndPosition = pos - 1;
-                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        lexem.Kind = GetLexemKind(lexem.Name);
-                        result.Add(lexem);
-                        break;
-                    }
+                case State.KeywordFunctionOther: // keyword, function or other name
+                    if (pos >= text.Length) goto case State.EndUnknownLexem;
                     ch = text[pos];
                     if (IsSpace(ch) || IsReturn(ch) || IsDelimiter(ch))
                     {
@@ -87,7 +80,7 @@ namespace TSQLFormatter.Model
                         lexem.Kind = GetLexemKind(lexem.Name);
                         result.Add(lexem);
                         lexemNameArrayIndex = 0;
-                        goto case 1;
+                        goto case State.General;
                     }
                     else if (ch == ']')
                     {
@@ -98,7 +91,7 @@ namespace TSQLFormatter.Model
                         result.Add(lexem);
                         lexemNameArrayIndex = 0;
                         pos++;
-                        goto case 1;
+                        goto case State.General;
                     }
                     else if (ch == '\'' && lexemNameArray[lexemNameArrayIndex - 1] == 'N')
                     {
@@ -107,22 +100,16 @@ namespace TSQLFormatter.Model
                         lexem.Kind = LexemKind.Other;
                         result.Add(lexem);
                         lexemNameArrayIndex = 0;
-                        goto case 1;
+                        goto case State.General;
                     }
                     else
                     {
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         pos++;
-                        goto case 2;
+                        goto case State.KeywordFunctionOther;
                     }
-                case 3: // comment
-                    if (pos >= text.Length)
-                    {
-                        lexem.EndPosition = pos - 1;
-                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        result.Add(lexem);
-                        break;
-                    }
+                case State.Comment: // comment
+                    if (pos >= text.Length) goto case State.End;
                     ch = text[pos];
                     if (IsReturn(ch))
                     {
@@ -131,22 +118,16 @@ namespace TSQLFormatter.Model
                         result.Add(lexem);
                         lexemNameArrayIndex = 0;
                         pos++;
-                        goto case 1;
+                        goto case State.General;
                     }
                     else
                     {
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         pos++;
-                        goto case 3;
+                        goto case State.Comment;
                     }
-                case 4: // string
-                    if (pos >= text.Length)
-                    {
-                        lexem.EndPosition = pos - 1;
-                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        result.Add(lexem);
-                        break;
-                    }
+                case State.String: // string
+                    if (pos >= text.Length) goto case State.End;
                     ch = text[pos];
                     if (IsReturn(ch))
                     {
@@ -155,7 +136,7 @@ namespace TSQLFormatter.Model
                         result.Add(lexem);
                         lexemNameArrayIndex = 0;
                         pos++;
-                        goto case 1;
+                        goto case State.General;
                     }
                     else if (ch == '\'')
                     {
@@ -165,14 +146,25 @@ namespace TSQLFormatter.Model
                         result.Add(lexem);
                         lexemNameArrayIndex = 0;
                         pos++;
-                        goto case 1;
+                        goto case State.General;
                     }
                     else
                     {
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         pos++;
-                        goto case 4;
+                        goto case State.String;
                     }
+                case State.EndUnknownLexem:
+                    lexem.EndPosition = pos - 1;
+                    lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                    lexem.Kind = GetLexemKind(lexem.Name);
+                    result.Add(lexem);
+                    break;
+                case State.End:
+                    lexem.EndPosition = pos - 1;
+                    lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
+                    result.Add(lexem);
+                    break;
             }
 
             return result;
