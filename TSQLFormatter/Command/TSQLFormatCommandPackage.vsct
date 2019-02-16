@@ -55,6 +55,7 @@
       <Button guid="guidTSQLFormatCommandPackageCmdSet" id="TSQLFormatCommandId" priority="0x0100" type="Button">
         <Parent guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>TSQL Format</ButtonText>
         </Strings>

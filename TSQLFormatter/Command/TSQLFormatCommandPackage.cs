@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -29,6 +30,7 @@ namespace TSQLFormatter.Command
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(TSQLFormatCommandPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     public sealed class TSQLFormatCommandPackage : AsyncPackage
     {
         /// <summary>

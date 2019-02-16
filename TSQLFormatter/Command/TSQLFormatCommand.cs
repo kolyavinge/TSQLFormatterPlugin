@@ -1,8 +1,10 @@
 ﻿using EnvDTE;
 using Microsoft.VisualStudio.Shell;
+using System.IO;
 using System;
 using System.ComponentModel.Design;
 using Task = System.Threading.Tasks.Task;
+using System.Collections.Generic;
 
 namespace TSQLFormatter.Command
 {
@@ -34,11 +36,21 @@ namespace TSQLFormatter.Command
         /// <param name="commandService">Command service to add command to, not null.</param>
         private TSQLFormatCommand(AsyncPackage package, OleMenuCommandService commandService)
         {
-            this._package = package ?? throw new ArgumentNullException(nameof(package));
+            _package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
             var menuCommandID = new CommandID(CommandSet, CommandId);
-            var menuItem = new MenuCommand(Execute, menuCommandID);
+            var menuItem = new OleMenuCommand(Execute, menuCommandID);
+            menuItem.BeforeQueryStatus += MenuItem_BeforeQueryStatus;
             commandService.AddCommand(menuItem);
+        }
+
+        private HashSet<string> _availableExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { ".cs", ".sql" };
+        private void MenuItem_BeforeQueryStatus(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var menuItem = (OleMenuCommand)sender;
+            var dte = (DTE)Package.GetGlobalService(typeof(DTE));
+            menuItem.Visible = dte.ActiveDocument != null && _availableExtensions.Contains(Path.GetExtension(dte.ActiveDocument.FullName));
         }
 
         /// <summary>
