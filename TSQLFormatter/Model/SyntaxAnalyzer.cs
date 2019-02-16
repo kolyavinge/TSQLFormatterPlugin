@@ -22,7 +22,7 @@ namespace TSQLFormatter.Model
         {
             var result = new List<Lexem>();
             if (String.IsNullOrWhiteSpace(text)) return result;
-            var lexemNameArray = new char[4096];
+            var lexemNameArray = new char[10 * 1024];
             int lexemNameArrayIndex = 0;
             int pos = 0;
             char ch;
@@ -125,16 +125,7 @@ namespace TSQLFormatter.Model
                 case State.String: // string
                     if (pos >= text.Length) goto case State.End;
                     ch = text[pos];
-                    if (IsReturn(ch))
-                    {
-                        lexem.EndPosition = pos - 1;
-                        lexem.Name = new string(lexemNameArray, 0, lexemNameArrayIndex);
-                        result.Add(lexem);
-                        lexemNameArrayIndex = 0;
-                        pos++;
-                        goto case State.General;
-                    }
-                    else if (ch == '\'')
+                    if (ch == '\'')
                     {
                         lexemNameArray[lexemNameArrayIndex++] = ch;
                         lexem.EndPosition = pos;

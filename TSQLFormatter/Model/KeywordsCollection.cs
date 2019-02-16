@@ -238,7 +238,9 @@ namespace TSQLFormatter.Model
             "STATISTICS",
             "PAD_INDEX",
             "IGNORE_DUP_KEY",
-            "PRIMARY"
+            "PRIMARY",
+            "QUOTED_IDENTIFIER",
+            "ANSI_NULLS"
         };
 
         public IEnumerator<string> GetEnumerator()

@@ -172,6 +172,20 @@ namespace TSQLFormatter.Test.Model
         }
 
         [TestMethod]
+        public void Parse_StringsMultiline()
+        {
+            var text = @"'select [group]
+from MyTable'";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+            Assert.AreEqual(1, lexems.Count);
+            Assert.AreEqual(0, lexems[0].StartPosition);
+            Assert.AreEqual(29, lexems[0].EndPosition);
+            Assert.AreEqual(@"'select [group]
+from MyTable'", lexems[0].Name);
+            Assert.AreEqual(LexemKind.String, lexems[0].Kind);
+        }
+
+        [TestMethod]
         public void Parse_Variables()
         {
             var text = "declare @var int";
@@ -222,7 +236,7 @@ namespace TSQLFormatter.Test.Model
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\3.sql");
             var lexems = _syntaxAnalyzer.Parse(fileText).ToList();
-            Assert.AreEqual(110747, lexems.Count);
+            Assert.AreEqual(31058, lexems.Count);
             lexems.ForEach(x => Assert.IsTrue(x.StartPosition <= fileText.Length));
             lexems.ForEach(x => Assert.IsTrue(x.EndPosition <= fileText.Length));
         }
