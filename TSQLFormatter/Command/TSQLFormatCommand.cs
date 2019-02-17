@@ -5,6 +5,8 @@ using System;
 using System.ComponentModel.Design;
 using Task = System.Threading.Tasks.Task;
 using System.Collections.Generic;
+using TSQLFormatter.Utils;
+using System.Linq;
 
 namespace TSQLFormatter.Command
 {
@@ -17,6 +19,11 @@ namespace TSQLFormatter.Command
         /// Command ID.
         /// </summary>
         public const int CommandId = 0x0100;
+
+        /// <summary>
+        /// FileContextCommand ID.
+        /// </summary>
+        public const int FileContextCommandId = 0x0101;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -38,10 +45,16 @@ namespace TSQLFormatter.Command
         {
             _package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
+
             var menuCommandID = new CommandID(CommandSet, CommandId);
             var menuItem = new OleMenuCommand(Execute, menuCommandID);
             menuItem.BeforeQueryStatus += MenuItem_BeforeQueryStatus;
             commandService.AddCommand(menuItem);
+
+            var fileContextMenuCommandID = new CommandID(CommandSet, FileContextCommandId);
+            var fileContextMenuItem = new OleMenuCommand(FileContextExecute, fileContextMenuCommandID);
+            fileContextMenuItem.BeforeQueryStatus += FileContextMenuItem_BeforeQueryStatus;
+            commandService.AddCommand(fileContextMenuItem);
         }
 
         private HashSet<string> _availableExtensions = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { ".cs", ".sql" };
@@ -51,6 +64,15 @@ namespace TSQLFormatter.Command
             var menuItem = (OleMenuCommand)sender;
             var dte = (DTE)Package.GetGlobalService(typeof(DTE));
             menuItem.Visible = dte.ActiveDocument != null && _availableExtensions.Contains(Path.GetExtension(dte.ActiveDocument.FullName));
+        }
+
+        private void FileContextMenuItem_BeforeQueryStatus(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var menuItem = (OleMenuCommand)sender;
+            var dte = (DTE)Package.GetGlobalService(typeof(DTE));
+            var selectedFileExtensions = dte.SelectedItems.GetSelectedFiles().Select(f => Path.GetExtension(f)).Distinct().ToList();
+            menuItem.Visible = selectedFileExtensions.Count == 1 && String.Equals(selectedFileExtensions.First(), ".sql", StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -106,6 +128,32 @@ namespace TSQLFormatter.Command
                 var formattedText = formatter.GetFormattedText(activeDocument.Selection.Text);
                 activeDocument.Selection.Delete();
                 activeDocument.Selection.Insert(formattedText);
+            }
+        }
+
+        private void FileContextExecute(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var formatter = new TSQLFormatter.Model.Formatter();
+            var dte = (DTE)Package.GetGlobalService(typeof(DTE));
+            var selectedProjectItems = dte.SelectedItems.GetSelectedProjectItems().ToList();
+            foreach (var selectedProjectItem in selectedProjectItems)
+            {
+                if (selectedProjectItem.Document != null)
+                {
+                    var textDocument = (TextDocument)selectedProjectItem.Document.Object();
+                    var documentText = textDocument.CreateEditPoint(textDocument.StartPoint).GetText(textDocument.EndPoint);
+                    var documentFormattedText = formatter.GetFormattedText(documentText);
+                    textDocument.CreateEditPoint(textDocument.StartPoint).Delete(textDocument.EndPoint);
+                    textDocument.CreateEditPoint(textDocument.StartPoint).Insert(documentFormattedText);
+                }
+                else
+                {
+                    var fileName = selectedProjectItem.FileNames[1];
+                    var documentText = File.ReadAllText(fileName);
+                    var documentFormattedText = formatter.GetFormattedText(documentText);
+                    File.WriteAllText(fileName, documentFormattedText);
+                }
             }
         }
     }

@@ -47,9 +47,9 @@
       </Group>
 
       <!-- команда в контекстном меню файла -->
-      <!--<Group guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" priority="0x0600">
+      <Group guid="guidTSQLFormatCommandPackageCmdSet" id="FileContextMenuGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
-      </Group>-->
+      </Group>
     </Groups>
 
     <!--Buttons section. -->
@@ -65,6 +65,15 @@
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidTSQLFormatCommandPackageCmdSet" id="TSQLFormatCommandId" priority="0x0100" type="Button">
         <Parent guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>TSQL Format</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidTSQLFormatCommandPackageCmdSet" id="TSQLFormatFileContextCommandId" priority="0x0100" type="Button">
+        <Parent guid="guidTSQLFormatCommandPackageCmdSet" id="FileContextMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -93,6 +102,11 @@
     <GuidSymbol name="guidTSQLFormatCommandPackageCmdSet" value="{09725bb6-8797-4306-98de-8b32342cea67}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="TSQLFormatCommandId" value="0x0100" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidTSQLFormatCommandPackageCmdSet" value="{09725bb6-8797-4306-98de-8b32342cea67}">
+      <IDSymbol name="FileContextMenuGroup" value="0x1021" />
+      <IDSymbol name="TSQLFormatFileContextCommandId" value="0x0101" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{55b82e4c-3f59-4442-a8b2-6d1e6746e4e5}" >

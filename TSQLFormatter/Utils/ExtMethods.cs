@@ -1,8 +1,7 @@
-﻿using System;
+﻿using EnvDTE;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TSQLFormatter.Utils
 {
@@ -19,6 +18,31 @@ namespace TSQLFormatter.Utils
         public static string JoinToString(this IEnumerable<string> collection, string separator)
         {
             return String.Join(separator, collection);
+        }
+    }
+
+    public static class SelectedItemsExt
+    {
+        public static IEnumerable<ProjectItem> GetSelectedProjectItems(this SelectedItems selectedItems)
+        {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            for (int selectedItemIndex = 1; selectedItemIndex <= selectedItems.Count; selectedItemIndex++)
+            {
+                yield return selectedItems.Item(selectedItemIndex).ProjectItem;
+            }
+        }
+
+        public static IEnumerable<string> GetSelectedFiles(this SelectedItems selectedItems)
+        {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            for (int selectedItemIndex = 1; selectedItemIndex <= selectedItems.Count; selectedItemIndex++)
+            {
+                var selectedProjectItem = selectedItems.Item(selectedItemIndex).ProjectItem;
+                for (short selectedProjectItemFileIndex = 1; selectedProjectItemFileIndex <= selectedProjectItem.FileCount; selectedProjectItemFileIndex++)
+                {
+                    yield return selectedProjectItem.FileNames[selectedProjectItemFileIndex];
+                }
+            }
         }
     }
 }
