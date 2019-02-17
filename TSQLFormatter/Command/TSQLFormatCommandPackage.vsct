@@ -36,9 +36,20 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
     <Groups>
+      <!-- команда в главном меню -->
       <Group guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
       </Group>
+
+      <!-- команда в контекстном меню окна -->
+      <Group guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" priority="0x0400">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+      </Group>
+
+      <!-- команда в контекстном меню файла -->
+      <!--<Group guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+      </Group>-->
     </Groups>
 
     <!--Buttons section. -->
