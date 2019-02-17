@@ -37,12 +37,12 @@
          must be a menu. -->
     <Groups>
       <!-- команда в главном меню -->
-      <Group guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" priority="0x0600">
+      <Group guid="guidTSQLFormatCommandPackageCmdSet" id="MenuGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
       </Group>
 
       <!-- команда в контекстном меню окна -->
-      <Group guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" priority="0x0400">
+      <Group guid="guidTSQLFormatCommandPackageCmdSet" id="MenuGroup" priority="0x0400">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
       </Group>
 
@@ -64,7 +64,7 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
       <Button guid="guidTSQLFormatCommandPackageCmdSet" id="TSQLFormatCommandId" priority="0x0100" type="Button">
-        <Parent guid="guidTSQLFormatCommandPackageCmdSet" id="MyMenuGroup" />
+        <Parent guid="guidTSQLFormatCommandPackageCmdSet" id="MenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -100,7 +100,7 @@
 
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidTSQLFormatCommandPackageCmdSet" value="{09725bb6-8797-4306-98de-8b32342cea67}">
-      <IDSymbol name="MyMenuGroup" value="0x1020" />
+      <IDSymbol name="MenuGroup" value="0x1020" />
       <IDSymbol name="TSQLFormatCommandId" value="0x0100" />
     </GuidSymbol>
 

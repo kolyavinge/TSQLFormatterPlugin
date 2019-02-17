@@ -45,4 +45,20 @@ namespace TSQLFormatter.Utils
             }
         }
     }
+
+    public static class TextDocumentExt
+    {
+        public static string GetText(this TextDocument textDocument)
+        {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            return textDocument.CreateEditPoint(textDocument.StartPoint).GetText(textDocument.EndPoint);
+        }
+
+        public static void SetText(this TextDocument textDocument, string text)
+        {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            textDocument.CreateEditPoint(textDocument.StartPoint).Delete(textDocument.EndPoint);
+            textDocument.CreateEditPoint(textDocument.StartPoint).Insert(text);
+        }
+    }
 }
