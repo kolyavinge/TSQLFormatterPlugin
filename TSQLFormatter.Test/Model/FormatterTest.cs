@@ -154,6 +154,15 @@ FROM
         }
 
         [TestMethod]
+        public void GetFormattedText_StoredProcedure()
+        {
+            var text = "exec sp_someprocedure";
+            var expected = "EXEC sp_someprocedure";
+            var actual = _formatter.GetFormattedText(text);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void GetFormattedText_SQLFile_1()
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\1.sql");

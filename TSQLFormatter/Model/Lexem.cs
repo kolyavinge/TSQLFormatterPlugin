@@ -27,6 +27,7 @@ namespace TSQLFormatter.Model
     {
         Keyword,
         Function,
+        StoredProcedure,
         Identifier,
         Variable,
         String,

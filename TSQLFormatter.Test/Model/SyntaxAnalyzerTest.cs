@@ -212,6 +212,18 @@ from MyTable'", lexems[0].Name);
         }
 
         [TestMethod]
+        public void Parse_StoredProcedure()
+        {
+            var text = "exec sp_someprocedure";
+            var lexems = _syntaxAnalyzer.Parse(text).ToList();
+            Assert.AreEqual(2, lexems.Count);
+            Assert.AreEqual("exec", lexems[0].Name);
+            Assert.AreEqual(LexemKind.Keyword, lexems[0].Kind);
+            Assert.AreEqual("sp_someprocedure", lexems[1].Name);
+            Assert.AreEqual(LexemKind.StoredProcedure, lexems[1].Kind);
+        }
+
+        [TestMethod]
         public void Parse_SQLFile_1()
         {
             var fileText = File.ReadAllText("..\\..\\SQLFiles\\1.sql");
