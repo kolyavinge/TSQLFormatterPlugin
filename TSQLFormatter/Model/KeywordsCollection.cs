@@ -240,7 +240,14 @@ namespace TSQLFormatter.Model
             "IGNORE_DUP_KEY",
             "PRIMARY",
             "QUOTED_IDENTIFIER",
-            "ANSI_NULLS"
+            "ANSI_NULLS",
+            "NEXT",
+            "OUTPUT",
+            "LOCAL",
+            "FORWARD_ONLY",
+            "STATIC",
+            "XML",
+            "PATH"
         };
 
         public IEnumerator<string> GetEnumerator()

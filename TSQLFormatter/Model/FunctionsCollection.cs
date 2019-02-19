@@ -102,7 +102,11 @@ namespace TSQLFormatter.Model
             "VAR",
             "VARP",
             "OBJECT_ID",
-            "OBJECT_SCHEMA_NAME"
+            "OBJECT_SCHEMA_NAME",
+            "SCOPE_IDENTITY",
+            "ERROR_MESSAGE",
+            "DB_NAME",
+            "OBJECT_NAME"
         };
 
         public IEnumerator<string> GetEnumerator()
