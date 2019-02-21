@@ -49,6 +49,7 @@ namespace TSQLFormatter.Model
             "CURSOR",
             "DATE",
             "DATABASE",
+            "DATEFORMAT",
             "DBCC",
             "DEALLOCATE",
             "DECLARE",
