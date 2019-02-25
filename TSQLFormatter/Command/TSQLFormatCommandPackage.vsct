@@ -42,9 +42,9 @@
       </Group>
 
       <!-- команда в контекстном меню окна -->
-      <Group guid="guidTSQLFormatCommandPackageCmdSet" id="MenuGroup" priority="0x0400">
+      <!--<Group guid="guidTSQLFormatCommandPackageCmdSet" id="MenuGroup" priority="0x0400">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
-      </Group>
+      </Group>-->
 
       <!-- команда в контекстном меню файла -->
       <Group guid="guidTSQLFormatCommandPackageCmdSet" id="FileContextMenuGroup" priority="0x0600">
